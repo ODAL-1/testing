@@ -1,0 +1,522 @@
+<div class="admin-container">
+  <div class="admin-container__actions">
+    <h2>Administración</h2>
+    <div class="admin-container__tabs">
+      <button
+        [class.active]="activeView === 'users'"
+        (click)="setActiveView('users')"
+      >
+        Usuarios
+      </button>
+      <button
+        [class.active]="activeView === 'clients'"
+        (click)="setActiveView('clients')"
+      >
+        Clientes
+      </button>
+      <button
+        [class.active]="activeView === 'doctors'"
+        (click)="setActiveView('doctors')"
+      >
+        Doctores
+      </button>
+      <button
+        [class.active]="activeView === 'benefits'"
+        (click)="setActiveView('benefits')"
+      >
+        Beneficios
+      </button>
+    </div>
+    <div class="admin-container__search" [formGroup]="searchForm">
+      <div class="search-input">
+        <svg width="20" height="20">
+          <use xlink:href="../../../assets/icons/icons.svg#search"></use>
+        </svg>
+        <input
+          type="text"
+          placeholder="Buscar..."
+          formControlName="searchTerm"
+          (input)="applyFilters()"
+        />
+      </div>
+      <div class="filter-dropdown">
+        <button (click)="toggleFilterMenu()" class="filter-button">
+          <svg width="20" height="20">
+            <use xlink:href="../../../assets/icons/icons.svg#filter"></use>
+          </svg>
+        </button>
+        @if (showFilterMenu) {
+          <div class="filter-menu">
+            <div class="filter-option">
+              <label>Ordenar por:</label>
+              <select formControlName="sortBy" (change)="applyFilters()">
+                <option value="date-desc">Más recientes</option>
+                <option value="date-asc">Más antiguos</option>
+                <option value="name-asc">Nombre (A-Z)</option>
+                <option value="name-desc">Nombre (Z-A)</option>
+              </select>
+            </div>
+            <div class="filter-actions">
+              <button (click)="resetFilters()" class="reset-button">
+                Restablecer filtros
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+    @switch (activeView) {
+      @case ("users") {
+        <button (click)="openUserModal()">
+          <svg width="24" height="24">
+            <use xlink:href="../../../assets/icons/icons.svg#addBox"></use>
+          </svg>
+          Agregar usuario
+        </button>
+      }
+      @case ("clients") {
+        <button (click)="openClientModal()">
+          <svg width="24" height="24">
+            <use xlink:href="../../../assets/icons/icons.svg#addBox"></use>
+          </svg>
+          Agregar cliente
+        </button>
+      }
+      @case ("doctors") {
+        <button (click)="openDoctorModal()">
+          <svg width="24" height="24">
+            <use xlink:href="../../../assets/icons/icons.svg#addBox"></use>
+          </svg>
+          Agregar doctor
+        </button>
+      }
+      @case ("benefits") {
+        <button (click)="openBenefitModal()">
+          <svg width="24" height="24">
+            <use xlink:href="../../../assets/icons/icons.svg#addBox"></use>
+          </svg>
+          Agregar beneficio
+        </button>
+      }
+    }
+  </div>
+  <div class="admin-container__content">
+    <div class="admin-container__table">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            @switch (activeView) {
+              @case ("users") {
+                <th>Nombre de usuario</th>
+                <th>Email</th>
+                <th>Privilegio</th>
+                <th>Fecha de creación</th>
+              }
+              @case ("clients") {
+                <th>Documento</th>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+                <th>Fecha de creación</th>
+              }
+              @case ("doctors") {
+                <th>Nombre</th>
+                <th>Fecha de creación</th>
+              }
+              @case ("benefits") {
+                <th>Nombre</th>
+                <th>Valor descontado</th>
+                <th>Activo</th>
+                <th>Fecha de creación</th>
+              }
+            }
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          @switch (activeView) {
+            @case ("users") {
+              <ng-container [formGroup]="editUserForm">
+                <ng-container formArrayName="itemsForm">
+                  @for (user of filteredUsers; track $index) {
+                    <tr [formGroupName]="$index">
+                      @if (!user.isEdit) {
+                        <td>{{ user._id }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>
+                          <span
+                            class="badge"
+                            [ngClass]="'badge-' + user.privilege"
+                          >
+                            {{
+                              user.privilege === "ADMINISTRADOR"
+                                ? "Administrador"
+                                : user.privilege === "USUARIO"
+                                  ? "Usuario"
+                                  : ""
+                            }}
+                          </span>
+                        </td>
+                        <td>{{ formatDate(user.createdAt!) }}</td>
+                        <td class="actions">
+                          <button
+                            class="action-btn edit"
+                            (click)="toggleEdit(user)"
+                          >
+                            <svg width="18" height="18">
+                              <use
+                                xlink:href="../../../assets/icons/icons.svg#edit"
+                              ></use>
+                            </svg>
+                          </button>
+                          <button
+                            class="action-btn delete"
+                            (click)="openConfirmModal(user._id, 'user')"
+                          >
+                            <svg width="18" height="18">
+                              <use
+                                xlink:href="../../../assets/icons/icons.svg#delete"
+                              ></use>
+                            </svg>
+                          </button>
+                        </td>
+                      } @else {
+                        <td>{{ user._id }}</td>
+                        <td>
+                          <input type="text" formControlName="username" />
+                        </td>
+                        <td>
+                          <input type="text" formControlName="email" />
+                        </td>
+                        <td>
+                          <select formControlName="privilege">
+                            <option value="USUARIO">USUARIO</option>
+                            <option value="ADMINISTRADOR">ADMINISTRADOR</option>
+                          </select>
+                        </td>
+                        <td>
+                          {{ formatDate(user.createdAt!) }}
+                        </td>
+                        <td class="actions">
+                          <button class="action-btn confirm">
+                            <svg width="18" height="18">
+                              <use
+                                xlink:href="../../../assets/icons/icons.svg#success"
+                              ></use>
+                            </svg>
+                          </button>
+                          <button
+                            class="action-btn delete"
+                            (click)="toggleEdit(user)"
+                          >
+                            <svg width="18" height="18">
+                              <use
+                                xlink:href="../../../assets/icons/icons.svg#cancel"
+                              ></use>
+                            </svg>
+                          </button>
+                        </td>
+                      }
+                    </tr>
+                  }
+                </ng-container>
+              </ng-container>
+            }
+            @case ("clients") {
+              <ng-container [formGroup]="editClientForm">
+                <ng-container formArrayName="itemsForm">
+                  @for (client of filteredClients; track $index) {
+                    <tr [formGroupName]="$index">
+                      @if (!client.isEdit) {
+                        <td>{{ client._id }}</td>
+                        <td>{{ client.document }}</td>
+                        <td>{{ client.name }}</td>
+                        <td>{{ client.email }}</td>
+                        <td>{{ client.phoneNumber }}</td>
+                        <td>{{ client.address }}</td>
+                        <td>{{ formatDate(client.createdAt) }}</td>
+                        <td class="actions">
+                          <button
+                            class="action-btn edit"
+                            (click)="onUpdateItem(client, 'client', $index)"
+                          >
+                            <svg width="18" height="18">
+                              <use
+                                xlink:href="../../../assets/icons/icons.svg#edit"
+                              ></use>
+                            </svg>
+                          </button>
+                          <button
+                            class="action-btn delete"
+                            (click)="openConfirmModal(client._id, 'client')"
+                          >
+                            <svg width="18" height="18">
+                              <use
+                                xlink:href="../../../assets/icons/icons.svg#delete"
+                              ></use>
+                            </svg>
+                          </button>
+                        </td>
+                      }
+                    </tr>
+                  }
+                </ng-container>
+              </ng-container>
+            }
+
+            @case ("doctors") {
+              <ng-container [formGroup]="editDoctorForm">
+                <ng-container formArrayName="itemsForm">
+                  @for (doctor of filteredDoctors; track $index) {
+                    <tr [formGroupName]="$index">
+                      @if (!doctor.isEdit) {
+                        <td>{{ doctor._id }}</td>
+                        <td>{{ doctor.name }}</td>
+                        <td>{{ formatDate(doctor.createdAt) }}</td>
+                        <td class="actions">
+                          <button
+                            class="action-btn edit"
+                            (click)="onUpdateItem(doctor, 'doctor', $index)"
+                          >
+                            <svg width="18" height="18">
+                              <use
+                                xlink:href="../../../assets/icons/icons.svg#edit"
+                              ></use>
+                            </svg>
+                          </button>
+                          <button
+                            class="action-btn delete"
+                            (click)="openConfirmModal(doctor._id, 'doctor')"
+                          >
+                            <svg width="18" height="18">
+                              <use
+                                xlink:href="../../../assets/icons/icons.svg#delete"
+                              ></use>
+                            </svg>
+                          </button>
+                        </td>
+                      } @else {}
+                    </tr>
+                  }
+                </ng-container>
+              </ng-container>
+            }
+            @case ("benefits") {
+              <ng-container [formGroup]="editBenefitForm">
+                <ng-container formArrayName="itemsForm">
+                  @for (benefit of filteredBenefits; track $index) {
+                    <tr [formGroupName]="$index">
+                      @if (!benefit.isEdit) {
+                        <td>{{ benefit._id }}</td>
+                        <td>{{ benefit.name }}</td>
+                        <td>{{ benefit.discountedValue }}</td>
+                        <td>
+                          <checkbox
+                            class="checkbox"
+                            [alt]="true"
+                            [disabled]="true"
+                            [checked]="benefit.isActive"
+                          ></checkbox>
+                        </td>
+                        <td>{{ formatDate(benefit.createdAt) }}</td>
+                        <td class="actions">
+                          <button
+                            class="action-btn edit"
+                            (click)="onUpdateItem(benefit, 'benefit', $index)"
+                          >
+                            <svg width="18" height="18">
+                              <use
+                                xlink:href="../../../assets/icons/icons.svg#edit"
+                              ></use>
+                            </svg>
+                          </button>
+                          <button
+                            class="action-btn delete"
+                            (click)="openConfirmModal(benefit._id, 'benefit')"
+                          >
+                            <svg width="18" height="18">
+                              <use
+                                xlink:href="../../../assets/icons/icons.svg#delete"
+                              ></use>
+                            </svg>
+                          </button>
+                        </td>
+                      } @else {}
+                    </tr>
+                  }
+                </ng-container>
+              </ng-container>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+@if (showUserModal) {
+  <div class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Agregar nuevo usuario</h3>
+        <button class="close-btn" (click)="closeUserModal()">
+          <svg width="20" height="20">
+            <use xlink:href="../../../assets/icons/icons.svg#close"></use>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" [formGroup]="newUserForm">
+        <div class="form-group">
+          <label>Nombre de usuario</label>
+          <input type="text" formControlName="username" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" formControlName="email" />
+        </div>
+        <div class="form-group">
+          <label>Privilegio</label>
+          <select formControlName="privilege">
+            <option value="ADMINISTRADOR">Administrador</option>
+            <option value="USUARIO">Usuario</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" formControlName="password" />
+        </div>
+        <div class="form-actions">
+          <button class="cancel-btn" (click)="closeUserModal()">
+            Cancelar
+          </button>
+          <button class="submit-btn" (click)="addUser()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showClientModal) {
+  <div class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Agregar nuevo cliente</h3>
+        <button class="close-btn" (click)="closeClientModal()">
+          <svg width="20" height="20">
+            <use xlink:href="../../../assets/icons/icons.svg#close"></use>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" [formGroup]="newClientForm">
+        <div class="form-group">
+          <label>Documento</label>
+          <input type="text" formControlName="document" />
+        </div>
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" formControlName="name" />
+        </div>
+        <div class="form-group">
+          <label>Apellido</label>
+          <input type="text" formControlName="lastName" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="text" formControlName="email" />
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="text" formControlName="phoneNumber" />
+        </div>
+        <div class="form-group">
+          <label for="clientAddress">Dirección</label>
+          <input type="text" formControlName="address" />
+        </div>
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" (click)="closeClientModal()">
+            Cancelar
+          </button>
+          <button class="submit-btn" (click)="addClient()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showDoctorModal) {
+  <div class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Agregar nuevo doctor</h3>
+        <button class="close-btn" (click)="closeDoctorModal()">
+          <svg width="20" height="20">
+            <use xlink:href="../../../assets/icons/icons.svg#close"></use>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" [formGroup]="newDoctorForm">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" formControlName="name" />
+        </div>
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" (click)="closeDoctorModal()">
+            Cancelar
+          </button>
+          <button class="submit-btn" (click)="addDoctor()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (showBenefitModal) {
+  <div class="modal-overlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>Agregar nuevo beneficio</h3>
+        <button class="close-btn" (click)="closeBenefitModal()">
+          <svg width="20" height="20">
+            <use xlink:href="../../../assets/icons/icons.svg#close"></use>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" [formGroup]="newBenefitForm">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" formControlName="name" />
+        </div>
+        <div class="form-group">
+          <label>Valor</label>
+          <input type="text" formControlName="discountedValue" />
+        </div>
+        <div class="form-group">
+          <label>Activo</label>
+          <input type="checkbox" formControlName="isActive" />
+        </div>
+        <div class="form-actions">
+          <button
+            type="button"
+            class="cancel-btn"
+            (click)="closeBenefitModal()"
+          >
+            Cancelar
+          </button>
+          <button class="submit-btn" (click)="addBenefit()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<confirm-modal
+  title="Confirmar eliminación"
+  message="¿Estas seguro de que quieres eliminar este usuario?"
+  cancelText="No, consérvalo"
+  confirmText="Si, estoy seguro"
+  [showModal]="showConfirmModal"
+  (closeModal)="handleCloseModal($event)"
+></confirm-modal>

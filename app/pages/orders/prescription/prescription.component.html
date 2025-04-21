@@ -1,0 +1,49 @@
+<div class="prescription" [formGroup]="formGroup">
+  <form-item [properties]="['flex-end']">
+    <form-field
+      name="OD"
+      [properties]="['row']"
+      style="width: unset"
+    ></form-field>
+    <form-field name="Esf" formGroupName="rightEye" style="width: 100px">
+      <input type="number" formControlName="spherical" step="0.01" />
+    </form-field>
+    <form-field name="Cil" formGroupName="rightEye" style="width: 100px">
+      <input type="number" formControlName="cylindrical" step="0.01" />
+    </form-field>
+    <form-field name="Eje" formGroupName="rightEye" style="width: 100px">
+      <input type="number" formControlName="axis" step="0.01" />
+    </form-field>
+
+    <form-field name="AP" formGroupName="rightEye" style="width: 100px">
+      <input type="number" formControlName="pupilHeight" step="0.01" />
+    </form-field>
+    <form-field name="DI" formGroupName="rightEye" style="width: 100px">
+      <input type="number" formControlName="pupilDistance" step="0.01" />
+    </form-field>
+  </form-item>
+
+  <form-item [properties]="['flex-end']">
+    <form-field
+      name="OI"
+      [properties]="['row']"
+      style="width: unset"
+    ></form-field>
+    <form-field name="Esf" formGroupName="leftEye" style="width: 100px">
+      <input type="number" formControlName="spherical" step="0.01" />
+    </form-field>
+    <form-field name="Cil" formGroupName="leftEye" style="width: 100px">
+      <input type="number" formControlName="cylindrical" step="0.01" />
+    </form-field>
+    <form-field name="Eje" formGroupName="leftEye" style="width: 100px">
+      <input type="number" formControlName="axis" step="0.01" />
+    </form-field>
+
+    <form-field name="AP" formGroupName="leftEye" style="width: 100px">
+      <input type="number" formControlName="pupilHeight" step="0.01" />
+    </form-field>
+    <form-field name="DI" formGroupName="leftEye" style="width: 100px">
+      <input type="number" formControlName="pupilDistance" step="0.01" />
+    </form-field>
+  </form-item>
+</div>

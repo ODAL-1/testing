@@ -1,0 +1,68 @@
+.pag {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Inter;
+  gap: 15px;
+
+  @media (width < 768px) {
+    gap: 5px;
+  }
+
+  button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    color: currentColor;
+    transition: background-color 0.15s ease-out;
+    cursor: pointer;
+
+    @media (width < 768px) {
+      width: 35px;
+      height: 35px;
+    }
+  }
+
+  &__page-counter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+
+    input[type="number"] {
+      width: 25px;
+      height: 25px;
+      background-color: transparent;
+      border: none;
+      border-bottom: 1px solid;
+      outline: none;
+      color: currentColor;
+      font-size: 18px;
+      text-align: center;
+      -moz-appearance: textfield;
+      appearance: textfield;
+      font-family: Inter;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    p {
+      width: 25px;
+      font-size: 18px;
+      color: currentColor;
+      text-align: center;
+      letter-spacing: 1px;
+      user-select: none;
+      margin: 0 0 2px 0;
+    }
+  }
+}

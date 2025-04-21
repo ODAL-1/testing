@@ -1,0 +1,37 @@
+:host {
+  display: flex;
+  flex: 1 1 auto;
+}
+
+.form-item {
+  display: flex;
+  flex-wrap: wrap;
+  flex: 1 1 auto;
+
+  &.nowrap {
+    flex-wrap: nowrap;
+  }
+
+  &.center-block {
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+  }
+
+  &.flex-end {
+    justify-content: flex-end;
+  }
+
+  &.grid {
+    display: grid;
+    grid-template-columns: repeat(var(--columns), 1fr);
+  }
+
+  &.has-button {
+    justify-content: flex-end;
+  }
+
+  &.column {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,112 @@
+.toast-container {
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 85px;
+  right: 5px;
+  z-index: 999999;
+  height: 0;
+  transition: height 1s ease-out;
+
+  .toast {
+    width: 300px;
+    padding: 20px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    backdrop-filter: blur(5px);
+
+    button {
+      background-color: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    &__message {
+      display: flex;
+      gap: 20px;
+      flex-direction: column;
+
+      h2 {
+        font-family: Inter;
+        margin: 0;
+        padding: 0;
+        font-weight: bold;
+        font-size: 15px;
+        margin-left: 10px;
+      }
+
+      p {
+        color: #334155;
+        font-family: Inter;
+        margin: 0;
+        padding: 0;
+        font-weight: 500;
+        font-size: 12px;
+      }
+
+      &__title {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+
+  .warning {
+    background: #fae398a2;
+    border: 2px solid #f8bf00;
+
+    h2 {
+      color: #f8bf00;
+    }
+
+    button {
+      svg {
+        color: #f8bf00;
+      }
+    }
+
+    svg {
+      color: #f8bf00;
+    }
+  }
+
+  .error {
+    background: #ffc7c7a2;
+    border: 2px solid #f35746;
+
+    h2 {
+      color: #f35746;
+    }
+
+    button {
+      svg {
+        color: #f35746;
+      }
+    }
+
+    svg {
+      color: #f35746;
+    }
+  }
+
+  .success {
+    background-color: #8ae7baa2;
+    border: 2px solid #19af66;
+
+    h2 {
+      color: #19af66;
+    }
+
+    button {
+      svg {
+        color: #19af66;
+      }
+    }
+
+    svg {
+      color: #19af66;
+    }
+  }
+}

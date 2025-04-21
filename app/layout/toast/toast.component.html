@@ -1,0 +1,30 @@
+<div
+  #toastContainer
+  [@slide]="toastService.toasts$.getValue().length"
+  class="toast-container"
+>
+  @for (toast of toastService.toasts$ | async; track $index) {
+    <div [className]="toast?.type + ' toast'">
+      <div class="toast__message">
+        <div class="toast__message__title">
+          @if (toast?.showIcon) {
+            <svg width="24" height="24">
+              <use
+                [attr.xlink:href]="
+                  '../../../assets/icons/icons.svg#' + toast.type
+                "
+              ></use>
+            </svg>
+          }
+          <h2>{{ toTitledCase(toast?.type!) }}</h2>
+        </div>
+        <p>{{ toast?.message }}</p>
+      </div>
+      <button (click)="toastService.close(toast.id!)">
+        <svg width="24" height="24">
+          <use xlink:href="../../assets/icons/icons.svg#cancel"></use>
+        </svg>
+      </button>
+    </div>
+  }
+</div>

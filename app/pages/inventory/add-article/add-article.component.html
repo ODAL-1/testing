@@ -1,0 +1,504 @@
+<div class="add">
+  <header class="add__header">
+    <h2>Agregar articulo</h2>
+    <div class="add__header__btn-wrapper">
+      <div class="buttons-container">
+        <button routerLink="/inventory">
+          <svg width="24" height="24">
+            <use xlink:href="../../../../assets/icons/icons.svg#back"></use>
+          </svg>
+          <span>Regresar</span>
+        </button>
+        <button (click)="handleAddGroup()">
+          <svg width="24" height="24">
+            <use xlink:href="../../../assets/icons/icons.svg#addBox"></use>
+          </svg>
+          <span>Grupo</span>
+        </button>
+        <div class="dropdown">
+          <button (click)="toggleDropdown()" class="dropdown-toggle">
+            <svg width="24" height="24">
+              <use xlink:href="../../../assets/icons/icons.svg#addBox"></use>
+            </svg>
+            <span>Armazón</span>
+            <svg
+              width="24"
+              height="24"
+              class="dropdown-arrow"
+              [class.open]="isDropdownOpen"
+            >
+              <use xlink:href="../../../assets/icons/icons.svg#dropdown"></use>
+            </svg>
+          </button>
+          <div class="dropdown-menu" [class.show]="isDropdownOpen">
+            <button (click)="handleAddFrameType()">
+              <svg width="20" height="20">
+                <use xlink:href="../../../assets/icons/icons.svg#addBox"></use>
+              </svg>
+              <span>Tipo de armazón</span>
+            </button>
+            <button (click)="handleAddMaterial()">
+              <svg width="20" height="20">
+                <use xlink:href="../../../assets/icons/icons.svg#addBox"></use>
+              </svg>
+              <span>Material</span>
+            </button>
+            <button (click)="handleAddShape()">
+              <svg width="20" height="20">
+                <use xlink:href="../../../assets/icons/icons.svg#addBox"></use>
+              </svg>
+              <span>Forma</span>
+            </button>
+          </div>
+        </div>
+        <button [style]="disabledStyle">
+          <svg width="24" height="24">
+            <use xlink:href="../../../assets/icons/icons.svg#addBox"></use>
+          </svg>
+          <span>Familia</span>
+        </button>
+        <button [style]="disabledStyle">
+          <svg width="24" height="24">
+            <use xlink:href="../../../assets/icons/icons.svg#addBox"></use>
+          </svg>
+          <span>Característica</span>
+        </button>
+      </div>
+    </div>
+  </header>
+  <main class="add__content">
+    <section class="add__content__form" [formGroup]="articleForm">
+      <form-item>
+        <form-field name="Familia">
+          <select (change)="onArticleTypeChange($event)" #family>
+            <option value="">Selecciona una opción</option>
+            @for (type of articleTypes; track $index) {
+              <option [value]="type.value">{{ type.display }}</option>
+            }
+          </select>
+        </form-field>
+      </form-item>
+
+      <div
+        [@collapse]="!familySelected ? true : false"
+        class="attributes-container"
+      >
+        <form-item
+          [properties]="['grid']"
+          [style.--columns]="
+            selectedArticleType === 'FRAME' || selectedArticleType === 'LENS'
+              ? '4'
+              : '3'
+          "
+        >
+          @for (attribute of articleAttributes; track $index) {
+            @switch (attribute.label) {
+              @case ("Nombre") {
+                <form-field [name]="attribute.label">
+                  <input [type]="attribute.type" formControlName="name" />
+                </form-field>
+              }
+              @case ("Tipo de cristal") {
+                <form-field [name]="attribute.label">
+                  <select formControlName="lensType">
+                    @for (lensType of lensTypes; track $index) {
+                      <option [value]="lensType">
+                        {{ lensType }}
+                      </option>
+                    }
+                  </select>
+                </form-field>
+              }
+              @case ("Origen") {
+                <form-field [name]="attribute.label">
+                  <select formControlName="productOrigin">
+                    @for (origin of productsOrigin; track $index) {
+                      <option [value]="origin">{{ origin }}</option>
+                    }
+                  </select>
+                </form-field>
+              }
+              @case ("Modelo") {
+                <form-field [name]="attribute.label">
+                  <input [type]="attribute.type" formControlName="model" />
+                </form-field>
+              }
+              @case ("Marca") {
+                <form-field [name]="attribute.label">
+                  <input [type]="attribute.type" formControlName="brand" />
+                </form-field>
+              }
+              @case ("Estilo") {
+                <form-field [name]="attribute.label">
+                  <input [type]="attribute.type" formControlName="style" />
+                </form-field>
+              }
+              @case ("Lentes de sol") {
+                <form-field [name]="attribute.label">
+                  <checkbox
+                    [alt]="true"
+                    [checked]="isChecked"
+                    (checkedChange)="onCheckboxChange($event)"
+                  ></checkbox>
+                </form-field>
+              }
+              @case ("Detalles") {
+                <form-field [name]="'Detalles'">
+                  <button
+                    class="details-button"
+                    (click)="openFrameDetailsForm()"
+                  >
+                    <svg width="18" height="18">
+                      <use
+                        xlink:href="../../../assets/icons/icons.svg#edit"
+                      ></use>
+                    </svg>
+                    <span> Detalles </span>
+                  </button>
+                </form-field>
+              }
+              @case ("Aplica a") {
+                <form-field [name]="attribute.label">
+                  <select formControlName="appliesTo">
+                    @for (type of articleTypes; track $index) {
+                      @if (type.value !== "TREATMENT") {
+                        <option [value]="type.urlKey">
+                          {{ type.display }}
+                        </option>
+                      }
+                    }
+                  </select>
+                </form-field>
+              }
+              @case ("Grupo") {
+                <form-field [name]="attribute.label">
+                  <select [formControl]="groupControl">
+                    <option value="">Selecciona un grupo</option>
+                    @for (group of filteredGroups; track $index) {
+                      <option [value]="group._id">
+                        {{ group.groupName }}
+                      </option>
+                    }
+                  </select>
+                </form-field>
+              }
+            }
+          }
+        </form-item>
+        <form-item [properties]="['grid']" [style.--columns]="3">
+          @for (attribute of articleAttributes; track $index) {
+            @switch (attribute.label) {
+              @case ("Precio") {
+                <form-field [name]="attribute.label">
+                  <input [type]="attribute.type" formControlName="price" />
+                </form-field>
+              }
+              @case ("Moneda") {
+                <form-field [name]="attribute.label">
+                  <select formControlName="currency">
+                    @for (currency of currencies; track $index) {
+                      <option [value]="currency">
+                        {{ currency }}
+                      </option>
+                    }
+                  </select>
+                </form-field>
+              }
+              @case ("Stock") {
+                <form-field [name]="attribute.label">
+                  <input [type]="attribute.type" formControlName="stock" />
+                </form-field>
+              }
+            }
+          }
+        </form-item>
+      </div>
+      <form-item [properties]="['has-button']">
+        <button
+          [disabled]="!familySelected"
+          [style]="!familySelected ? disabledStyle : null"
+          type="button"
+          (click)="onItemAdd()"
+        >
+          Agregar
+        </button>
+      </form-item>
+    </section>
+    <section
+      class="add__content__list"
+      #scrollMe
+      [scrollTop]="scrollMe.scrollHeight"
+    >
+      @if (newItems.length > 0) {
+        <table>
+          <thead>
+            <tr>
+              <th>
+                <checkbox
+                  class="checkbox"
+                  [checked]="isAllSelected"
+                  (checkedChange)="onSelectAll()"
+                ></checkbox>
+              </th>
+              <th>Modelo</th>
+              <th>Nombre</th>
+              <th>Marca</th>
+              <th>Estilo</th>
+              <th>Lentes de sol</th>
+              <th>Aplica a</th>
+              <th>Tipo de lente</th>
+              <th>Origen</th>
+              <th>Precio</th>
+              <th>Moneda</th>
+              <th>Stock</th>
+              @if (showFrameDetailsColumn) {
+                <th>Detalles</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (newItem of newItems; track $index) {
+              <tr>
+                <td>
+                  <checkbox
+                    class="checkbox"
+                    [(checked)]="newItem.selected!"
+                  ></checkbox>
+                </td>
+                <td>{{ newItem.model }}</td>
+                <td>{{ newItem.name }}</td>
+                <td>{{ newItem.brand }}</td>
+                <td>{{ newItem.style }}</td>
+                @if (newItem.isSunglasses !== "-") {
+                  <td>
+                    <checkbox
+                      class="checkbox"
+                      [alt]="true"
+                      [checked]="toBoolean(newItem.isSunglasses)"
+                      [disabled]="true"
+                    ></checkbox>
+                  </td>
+                } @else {
+                  <td>{{ newItem.isSunglasses }}</td>
+                }
+                <td>{{ newItem.appliesTo }}</td>
+                <td>
+                  @if (newItem.lensType !== "-") {
+                    <p>{{ newItem.lensType }}</p>
+                  } @else {
+                    {{ newItem.lensType }}
+                  }
+                </td>
+                <td>
+                  @if (newItem.origin !== "-") {
+                    <p>{{ newItem.origin }}</p>
+                  } @else {
+                    {{ newItem.origin }}
+                  }
+                </td>
+                <td>{{ newItem.price }}</td>
+                <td>
+                  @if (newItem.currency !== "-") {
+                    <p>{{ newItem.currency }}</p>
+                  } @else {
+                    {{ newItem.currency }}
+                  }
+                </td>
+                <td>{{ newItem.stock }}</td>
+                @if (newItem.type === "FRAME") {
+                  <td>
+                    <button
+                      class="details-button"
+                      [style.backgroundColor]="'#4a90e2'"
+                      (click)="openDetailsModal(newItem)"
+                    >
+                      <svg width="16" height="16">
+                        <use
+                          xlink:href="../../../assets/icons/icons.svg#edit"
+                        ></use>
+                      </svg>
+                    </button>
+                  </td>
+                } @else if (showFrameDetailsColumn) {
+                  <td>-</td>
+                }
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <td [attr.colspan]="showFrameDetailsColumn ? 13 : 12">
+              <form-item [properties]="['has-button']">
+                <button
+                  type="button"
+                  [style]="
+                    newItems.length > 0 && isAnyItemSelected
+                      ? null
+                      : disabledStyle
+                  "
+                  [disabled]="!isAnyItemSelected"
+                  (click)="handleDelete('multiple')"
+                >
+                  Eliminar
+                </button>
+                <button
+                  type="button"
+                  [style]="newItems.length > 0 ? null : disabledStyle"
+                  (click)="onItemsUpload()"
+                >
+                  Aceptar
+                </button>
+              </form-item>
+            </td>
+          </tfoot>
+        </table>
+      } @else {
+        <div class="empty-list">
+          <svg width="24" height="24">
+            <use xlink:href="../../../../assets/icons/icons.svg#list"></use>
+          </svg>
+          <h2>No hay items en la lista</h2>
+          <p>Agrega algún item para comenzar</p>
+        </div>
+      }
+    </section>
+  </main>
+</div>
+
+<confirm-modal
+  [title]="'Confirmar eliminación'"
+  [message]="
+    '¿Estas seguro de que quieres eliminar esto? Esta acción no se puede deshacer.'
+  "
+  [cancelText]="'No, consérvalo'"
+  [confirmText]="'Si, estoy seguro'"
+  [showModal]="showModal"
+  (closeModal)="handleCloseModal($event)"
+>
+</confirm-modal>
+
+<modal
+  [showModal]="showAddGroup"
+  [benefitModal]="true"
+  (closeModal)="handleAddGroup()"
+>
+  <form-item [formGroup]="groupForm">
+    <form-field name="Nombre">
+      <input type="text" formControlName="name" />
+    </form-field>
+    <form-field name="Tipo de cristal">
+      <select formControlName="lensType">
+        <option value="">Selecciona un tipo de cristal</option>
+        @for (lensType of lensTypes; track $index) {
+          <option [value]="lensType">{{ lensType }}</option>
+        }
+      </select>
+    </form-field>
+  </form-item>
+  <form-item>
+    <h2>Rangos esférico</h2>
+    <h2>Rangos cilíndrico</h2>
+    <h2>Rangos adición</h2></form-item
+  >
+  <form-item>
+    <form-item [formGroup]="sphericalForm">
+      <form-field name="Inicio" [style.width]="'100px'" [style.flex]="'unset'">
+        <input type="number" formControlName="x" step="0.01" />
+      </form-field>
+      <form-field name="Fin" [style.width]="'100px'" [style.flex]="'unset'">
+        <input type="number" formControlName="y" step="0.01" />
+      </form-field>
+    </form-item>
+
+    <form-item [formGroup]="cylindricalForm">
+      <form-field name="Inicio" [style.width]="'100px'" [style.flex]="'unset'">
+        <input type="number" formControlName="x" step="0.01" />
+      </form-field>
+      <form-field name="Fin" [style.width]="'100px'" [style.flex]="'unset'">
+        <input type="number" formControlName="y" step="0.01" />
+      </form-field>
+    </form-item>
+
+    <form-item [formGroup]="additionForm">
+      <form-field name="Inicio" [style.width]="'100px'" [style.flex]="'unset'">
+        <input type="number" formControlName="x" step="0.01" />
+      </form-field>
+      <form-field name="Fin" [style.width]="'100px'" [style.flex]="'unset'">
+        <input type="number" formControlName="y" step="0.01" />
+      </form-field>
+    </form-item>
+  </form-item>
+  <form-item [properties]="['has-button']">
+    <button (click)="onGroupAdd()">Agregar</button>
+  </form-item>
+</modal>
+
+<modal
+  [showModal]="showNameModal"
+  [benefitModal]="true"
+  (closeModal)="closeNameModal()"
+>
+  <h2>
+    {{
+      currentFrameAction === "frameType"
+        ? "Agregar Tipo de Armazón"
+        : currentFrameAction === "material"
+          ? "Agregar Material"
+          : currentFrameAction === "shape"
+            ? "Agregar Forma"
+            : ""
+    }}
+  </h2>
+  <form-item [formGroup]="nameForm">
+    <form-field name="Nombre">
+      <input type="text" formControlName="name" />
+    </form-field>
+  </form-item>
+  <form-item [properties]="['has-button']">
+    <button (click)="handleNameSubmit()">Agregar</button>
+  </form-item>
+</modal>
+
+<modal
+  [showModal]="showDetailsModal"
+  [benefitModal]="true"
+  (closeModal)="closeDetailsModal()"
+>
+  <h2>Detalles del Armazón</h2>
+  <form-item [formGroup]="frameDetailsForm">
+    <div class="frame-details-grid">
+      <div>
+        <form-field name="Calibre">
+          <input type="number" formControlName="caliber" min="0" step="0.01" />
+        </form-field>
+      </div>
+      <div>
+        <form-field name="Puente">
+          <input type="number" formControlName="bridge" min="0" step="0.01" />
+        </form-field>
+      </div>
+      <div>
+        <form-field name="Diagonal Mayor">
+          <input
+            type="number"
+            formControlName="majorDiagonal"
+            min="0"
+            step="0.01"
+          />
+        </form-field>
+      </div>
+      <div>
+        <form-field name="Altura de Aro">
+          <input
+            type="number"
+            formControlName="ringHeight"
+            min="0"
+            step="0.01"
+          />
+        </form-field>
+      </div>
+    </div>
+  </form-item>
+  <form-item [properties]="['has-button']">
+    <button (click)="saveFrameDetails()">Guardar</button>
+  </form-item>
+</modal>

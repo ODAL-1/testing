@@ -1,0 +1,52 @@
+:host {
+  display: flex;
+  flex: 1 1 auto;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  width: 100%;
+  padding: 20px 20px 16px 20px;
+
+  label {
+    font-size: clamp(11px, 1vw, 16px);
+    margin-bottom: 10px;
+    font-family: Inter, Arial;
+  }
+
+  &.block {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #dbdbdb;
+    padding: 8px 16px 8px 16px;
+    transition: background-color 0.25s ease-out;
+    cursor: pointer;
+
+    label {
+      margin: 0;
+      font-family: Inter, Arial;
+      color: #5f5f5f;
+      transition: color 0.25s ease-out;
+      user-select: none;
+      cursor: pointer;
+    }
+  }
+
+  &.active {
+    background-color: #dbeafe;
+
+    label {
+      color: #1d4ed8;
+    }
+  }
+
+  &.row {
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 0px 0px 8px 15px;
+  }
+}

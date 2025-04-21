@@ -1,0 +1,55 @@
+aside {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #ffffff;
+
+  @media (width <= 1024px) {
+    width: 54px;
+
+    a {
+      text-indent: -9999px;
+      svg {
+        margin: 0 10px 0 14px;
+      }
+    }
+  }
+
+  @media (1024px < width) {
+    width: 250px;
+
+    a {
+      svg {
+        margin: 0 10px 0 25px;
+      }
+    }
+  }
+
+  a {
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    padding: 15px 0 15px 0;
+    border: none;
+    color: #5d7285;
+    font-family: Inter;
+    font-weight: 500;
+    font-size: 17px;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background-color 0.1s ease-out,
+      color 0.1s ease-out;
+
+    &:hover {
+      background-color: #f38282;
+      color: #ffffff;
+    }
+  }
+}
+
+a.active-link {
+  background-color: #f38282 !important;
+  color: #ffffff !important;
+}

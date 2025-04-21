@@ -1,0 +1,15 @@
+<label class="checkbox">
+  <input
+    type="checkbox"
+    [checked]="checked"
+    [disabled]="disabled"
+    (change)="toggleChecked()"
+  />
+  <span class="check-mark">
+    @if (!alt) {
+      <div [@checkboxGrow]="checked" [class]="alt ? 'alt' : null"></div>
+    } @else {
+      <div [@altCheckBoxGrow]="checked" [class]="alt ? 'alt' : null"></div>
+    }
+  </span>
+</label>
